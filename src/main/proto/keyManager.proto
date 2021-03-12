@@ -8,13 +8,33 @@ option objc_class_prefix = "HLW";
 package br.com.zup.pix;
 
 service KeyManagerService {
-  rpc send (KeyManagerRequest) returns (KeyManagerReply) {}
+  rpc create(CreatePixKeyRequest) returns (CreatePixKeyResponse);
 }
 
-message KeyManagerRequest {
-  string name = 1;
+enum KeyType {
+  CPF = 0;
+  TELL_NUMBER = 1;
+  EMAIL = 2;
+  RANDOM = 3;
 }
 
-message KeyManagerReply {
-  string message = 1;
+enum AccountType {
+  CONTA_CORRENTE = 0;
+  CONTA_POUPANCA = 1;
+}
+
+message CreatePixKeyRequest {
+
+  string clientId = 1;
+  KeyType keyType = 2;
+  string keyValue = 3;
+  AccountType accountType = 4;
+
+}
+
+message CreatePixKeyResponse {
+
+  string clientId = 1;
+  string pixId = 2;
+
 }

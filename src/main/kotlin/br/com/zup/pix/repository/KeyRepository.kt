@@ -1,0 +1,15 @@
+package br.com.zup.pix.repository
+
+import br.com.zup.pix.model.PixKey
+import io.micronaut.data.annotation.Repository
+import io.micronaut.data.repository.CrudRepository
+import java.util.*
+
+@Repository
+interface KeyRepository : CrudRepository<PixKey, Long> {
+
+    fun findByKeyValue(keyValue: String): Optional<PixKey>
+
+    fun existsByKeyValue(keyValue: String): Boolean
+
+}
