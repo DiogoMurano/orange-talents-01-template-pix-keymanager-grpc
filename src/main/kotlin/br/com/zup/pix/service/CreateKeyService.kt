@@ -1,11 +1,11 @@
 package br.com.zup.pix.service
 
-import br.com.zup.pix.KeyType
 import br.com.zup.pix.client.ItauERPClient
 import br.com.zup.pix.endpoint.mapper.CreateKey
 import br.com.zup.pix.exception.types.AlreadyExistsException
 import br.com.zup.pix.exception.types.NotFoundException
 import br.com.zup.pix.model.PixKey
+import br.com.zup.pix.model.enums.KeyType
 import br.com.zup.pix.repository.KeyRepository
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
@@ -25,20 +25,21 @@ class CreateKeyService(
     private val logger = LoggerFactory.getLogger(CreateKeyService::class.java)
 
     @Transactional
-    fun persistKey(@Valid createKey: CreateKey): PixKey =
-        with(createKey) {
-            if (repository.existsByKeyValue(value))
-                throw AlreadyExistsException("Key $value is already registered.")
+    fun persistKey(@Valid createKey: CreateKey): PixKey {
+        val pixKey = createKey.toModel()
 
-            val body = erpClient.getAccount(clientId, accountType.name).body()
-                ?: throw NotFoundException("Account id $clientId and type ${accountType.name} was not found")
+        if (repository.existsByKeyValue(pixKey.keyValue))
+            throw AlreadyExistsException("Key ${pixKey.keyValue} is already registered.")
 
-            if (type == KeyType.CPF && body.owner.cpf != value)
-                throw ValidationException("This CPF does not belong to the informed user.")
+        val body = erpClient.getAccount(pixKey.clientId.toString(), pixKey.accountType.name).body()
+            ?: throw NotFoundException("Account id ${pixKey.clientId} and type ${pixKey.accountType.name} was not found")
 
-            toModel()
-        }.apply {
-            repository.save(this)
-            logger.info("Pix key registered successfully")
-        }
+        if (pixKey.keyType == KeyType.CPF && body.owner.cpf != pixKey.keyValue)
+            throw ValidationException("This CPF does not belong to the informed user.")
+
+        repository.save(pixKey)
+        logger.info("Pix key registered successfully")
+
+        return pixKey
+    }
 }
