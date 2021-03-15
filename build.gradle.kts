@@ -106,4 +106,5 @@ buildscript {
 
 allOpen {
     annotation("io.micronaut.aop.Around")
+//    annotation("io.micronaut.aop.Around")
 }

@@ -1,30 +1,33 @@
 package br.com.zup.pix.validator
 
-import java.util.*
+import io.micronaut.core.annotation.AnnotationValue
+import io.micronaut.validation.validator.constraints.ConstraintValidator
+import io.micronaut.validation.validator.constraints.ConstraintValidatorContext
 import javax.inject.Singleton
 import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
+import javax.validation.Payload
 import kotlin.annotation.AnnotationRetention.RUNTIME
-import kotlin.annotation.AnnotationTarget.FIELD
+import kotlin.annotation.AnnotationTarget.*
+import kotlin.reflect.KClass
 
-@Target(FIELD)
+@MustBeDocumented
+@Target(FIELD, CONSTRUCTOR, PROPERTY, VALUE_PARAMETER)
 @Retention(RUNTIME)
 @Constraint(validatedBy = [UniqueIdValidator::class])
 annotation class ValidUniqueId(
-    val message: String = "The UUID value has an invalid format"
+    val message: String = "The UUID value has an invalid format",
+    val groups: Array<KClass<Any>> = [],
+    val payload: Array<KClass<Payload>> = []
 )
 
 @Singleton
 class UniqueIdValidator : ConstraintValidator<ValidUniqueId, String> {
 
-    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean =
-        with(value) {
-
-            if (this == null) {
-                return true
-            }
-
-            false
-        }
+    override fun isValid(
+        value: String?,
+        annotationMetadata: AnnotationValue<ValidUniqueId>,
+        context: ConstraintValidatorContext
+    ): Boolean {
+        return false
+    }
 }
