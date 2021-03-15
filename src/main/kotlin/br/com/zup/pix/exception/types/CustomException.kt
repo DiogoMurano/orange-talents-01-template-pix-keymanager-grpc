@@ -1,4 +1,4 @@
-package br.com.zup.pix.exception
+package br.com.zup.pix.exception.types
 
 import java.lang.RuntimeException
 

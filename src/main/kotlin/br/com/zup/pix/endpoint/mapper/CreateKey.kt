@@ -1,4 +1,4 @@
-package br.com.zup.pix.endpoint
+package br.com.zup.pix.endpoint.mapper
 
 import br.com.zup.pix.AccountType as ReceiverAccountType
 import br.com.zup.pix.KeyType as ReceiverKeyType
@@ -16,13 +16,13 @@ import javax.validation.constraints.NotNull
 @ValidPixKey
 data class CreateKey(
 
-    @ValidUniqueId
+    @field:ValidUniqueId
     val clientId: String,
-    @NotNull
+    @field:NotNull
     val type: ReceiverKeyType,
-    @NotBlank
+    @field:NotBlank
     val value: String,
-    @NotNull
+    @field:NotNull
     val accountType: ReceiverAccountType
 ) {
 

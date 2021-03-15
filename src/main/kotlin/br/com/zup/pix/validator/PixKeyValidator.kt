@@ -1,7 +1,8 @@
 package br.com.zup.pix.validator
 
 import br.com.zup.pix.KeyType
-import br.com.zup.pix.endpoint.CreateKey
+import br.com.zup.pix.endpoint.mapper.CreateKey
+import io.micronaut.validation.validator.constraints.EmailValidator
 import javax.inject.Singleton
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
@@ -19,7 +20,7 @@ annotation class ValidPixKey(
 @Singleton
 class PixKeyValidator : ConstraintValidator<ValidPixKey, CreateKey> {
 
-    override fun isValid(value: CreateKey?, context: ConstraintValidatorContext?): Boolean =
+    override fun isValid(value: CreateKey?, context: ConstraintValidatorContext): Boolean =
         with(value) {
             if (this == null) {
                 return true
@@ -30,7 +31,7 @@ class PixKeyValidator : ConstraintValidator<ValidPixKey, CreateKey> {
             }
 
             if (type == KeyType.EMAIL) {
-                return validateEmail(this.value)
+                return validateEmail(this.value, context)
             }
 
             if (type == KeyType.TELL_NUMBER) {
@@ -40,14 +41,15 @@ class PixKeyValidator : ConstraintValidator<ValidPixKey, CreateKey> {
         }
 
     private fun validateCpf(value: String): Boolean {
-        return value.matches("([0-9]{3}[.]?[0-9]{3}[.]?[0-9]{3}-[0-9]{2})|([0-9]{11})".toRegex())
+        return value.matches("^[0-9]{11}\$".toRegex())
     }
 
-    private fun validateEmail(value: String): Boolean {
-        return value.matches("^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$".toRegex(RegexOption.IGNORE_CASE))
+    private fun validateEmail(value: String, context: ConstraintValidatorContext): Boolean {
+        val validator = EmailValidator()
+        return validator.isValid(value, context)
     }
 
     private fun validateTellNumber(value: String): Boolean {
-        return value.matches("(\\(?\\d{2}\\)?\\s)?(\\d{4,5}-\\d{4})".toRegex())
+        return value.matches("^\\+[1-9][0-9]\\d{1,14}\$".toRegex())
     }
 }

@@ -1,4 +1,5 @@
 import com.google.protobuf.gradle.*
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.10"
     id("org.jetbrains.kotlin.kapt") version "1.4.10"
@@ -12,7 +13,8 @@ plugins {
 version = "0.1"
 group = "br.com.zup.pix"
 
-val kotlinVersion=project.properties.get("kotlinVersion")
+val kotlinVersion = project.properties.get("kotlinVersion")
+
 repositories {
     mavenCentral()
 }
@@ -63,9 +65,8 @@ tasks {
             jvmTarget = "11"
         }
     }
-
-
 }
+
 sourceSets {
     main {
         java {
@@ -92,4 +93,17 @@ protobuf {
             }
         }
     }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-allopen:1.4.30")
+    }
+}
+
+allOpen {
+    annotation("io.micronaut.aop.Around")
 }

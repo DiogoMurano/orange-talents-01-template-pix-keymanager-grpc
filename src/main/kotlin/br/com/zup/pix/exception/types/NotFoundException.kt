@@ -1,3 +1,3 @@
-package br.com.zup.pix.exception
+package br.com.zup.pix.exception.types
 
 class NotFoundException(message: String): CustomException(message)

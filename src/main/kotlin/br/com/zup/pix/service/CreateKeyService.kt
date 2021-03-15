@@ -1,9 +1,9 @@
 package br.com.zup.pix.service
 
 import br.com.zup.pix.client.ItauERPClient
-import br.com.zup.pix.endpoint.CreateKey
-import br.com.zup.pix.exception.AlreadyExistsException
-import br.com.zup.pix.exception.NotFoundException
+import br.com.zup.pix.endpoint.mapper.CreateKey
+import br.com.zup.pix.exception.types.AlreadyExistsException
+import br.com.zup.pix.exception.types.NotFoundException
 import br.com.zup.pix.model.PixKey
 import br.com.zup.pix.repository.KeyRepository
 import io.micronaut.validation.Validated
