@@ -1,14 +1,17 @@
 package br.com.zup.pix.service
 
 import br.com.zup.pix.client.ItauERPClient
-import br.com.zup.pix.endpoint.mapper.CreateKey
+import br.com.zup.pix.endpoint.dto.CreateKey
+import br.com.zup.pix.endpoint.dto.RemoveKey
 import br.com.zup.pix.exception.types.AlreadyExistsException
 import br.com.zup.pix.exception.types.NotFoundException
+import br.com.zup.pix.exception.types.PermissionDeniedException
 import br.com.zup.pix.model.PixKey
 import br.com.zup.pix.model.enums.KeyType
 import br.com.zup.pix.repository.KeyRepository
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
@@ -41,5 +44,21 @@ class CreateKeyService(
         logger.info("Pix key registered successfully")
 
         return pixKey
+    }
+
+    @Transactional
+    fun removeKey(@Valid removeKey: RemoveKey) {
+
+        val pixId = UUID.fromString(removeKey.pixId!!)
+        val clientId = UUID.fromString(removeKey.clientId!!)
+
+        val pixKey =
+            repository.findById(pixId).orElseThrow { NotFoundException("The informed pix key was not found.") }
+
+        if (pixKey.clientId != clientId) {
+            throw PermissionDeniedException("You don't have permission to remove this pix key.")
+        }
+
+        repository.deleteById(pixId)
     }
 }

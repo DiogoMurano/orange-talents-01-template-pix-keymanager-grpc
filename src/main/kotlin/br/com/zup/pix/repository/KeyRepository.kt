@@ -6,7 +6,7 @@ import io.micronaut.data.repository.CrudRepository
 import java.util.*
 
 @Repository
-interface KeyRepository : CrudRepository<PixKey, Long> {
+interface KeyRepository : CrudRepository<PixKey, UUID> {
 
     fun findByKeyValue(keyValue: String): Optional<PixKey>
 

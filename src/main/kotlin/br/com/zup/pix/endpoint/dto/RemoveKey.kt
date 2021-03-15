@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank
 class RemoveKey(
 
     @field:ValidUniqueId
-    @field:NotBlank
+    @NotBlank
     val pixId: String?,
 
     @field:NotBlank

@@ -1,4 +1,4 @@
-package br.com.zup.pix.endpoint.mapper
+package br.com.zup.pix.endpoint.dto
 
 import br.com.zup.pix.AccountType as ReceiverAccountType
 import br.com.zup.pix.KeyType as ReceiverKeyType

@@ -15,20 +15,20 @@ class PixKey(
     val clientId: UUID,
 
     @field:NotNull
-    @field:Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     val keyType: KeyType,
 
     @field:NotBlank
-    @field:Size(max = 77)
+    @Size(max = 77)
     val keyValue: String = UUID.randomUUID().toString(),
 
     @field:NotNull
-    @field:Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     val accountType: AccountType
 ) {
 
     @field:Id
-    @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: UUID? = null
 
 }

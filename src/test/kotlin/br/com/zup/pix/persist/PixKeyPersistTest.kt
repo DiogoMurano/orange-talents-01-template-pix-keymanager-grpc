@@ -1,6 +1,6 @@
 package br.com.zup.pix.persist
 
-import br.com.zup.pix.endpoint.mapper.CreateKey
+import br.com.zup.pix.endpoint.dto.CreateKey
 import br.com.zup.pix.exception.types.NotFoundException
 import br.com.zup.pix.model.enums.AccountType
 import br.com.zup.pix.model.enums.KeyType
