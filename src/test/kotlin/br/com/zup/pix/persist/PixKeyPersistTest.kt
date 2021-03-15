@@ -28,7 +28,7 @@ class PixKeyPersistTest {
         val createKey = CreateKey(
             clientId = UUID.randomUUID().toString(),
             type = ReceiverKeyType.CPF,
-            value = "444.444.444-44",
+            value = "44444444444",
             accountType = ReceiverAccountType.CONTA_CORRENTE
         )
 
@@ -47,15 +47,15 @@ class PixKeyPersistTest {
         val createKey = CreateKey(
             clientId = "c56dfef4-7901-44fb-84e2-a2cefb157890",
             type = ReceiverKeyType.CPF,
-            value = "444.444.444-44",
+            value = "02467781054",
             accountType = ReceiverAccountType.CONTA_CORRENTE
         )
 
         assertAll({
             assertNotNull(createKeyService.persistKey(createKey))
-            assertTrue(keyRepository.existsByKeyValue(createKey.value))
+            assertTrue(keyRepository.existsByKeyValue(createKey.value!!))
 
-            val findByKeyValue = keyRepository.findByKeyValue(createKey.value)
+            val findByKeyValue = keyRepository.findByKeyValue(createKey.value!!)
             assertFalse(findByKeyValue.isEmpty)
 
             val pixKey = findByKeyValue.get()
@@ -72,7 +72,7 @@ class PixKeyPersistTest {
         val createKey = CreateKey(
             clientId = UUID.randomUUID().toString(),
             type = ReceiverKeyType.CPF,
-            value = "444.444.444-44",
+            value = "44444444444",
             accountType = ReceiverAccountType.CONTA_CORRENTE
         )
 
