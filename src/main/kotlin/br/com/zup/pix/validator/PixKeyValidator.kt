@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 @Retention(RUNTIME)
 @Constraint(validatedBy = [PixKeyValidator::class])
 annotation class ValidPixKey(
-    val message: String = "The pix key doesn't have a valid value.",
+    val message: String = "The pix key doesn't have a valid type and value.",
     val groups: Array<KClass<Any>> = [],
     val payload: Array<KClass<Payload>> = []
 )
@@ -28,28 +28,31 @@ annotation class ValidPixKey(
 class PixKeyValidator : ConstraintValidator<ValidPixKey, CreateKey> {
 
     override fun isValid(
-        value: CreateKey?,
+        createKey: CreateKey?,
         annotationMetadata: AnnotationValue<ValidPixKey>,
         context: ConstraintValidatorContext
-    ): Boolean =
-        with(value) {
-            if (this == null) {
-                return true
-            }
-
-            if (type == KeyType.CPF) {
-                return validateCpf(this.value)
-            }
-
-            if (type == KeyType.EMAIL) {
-                return validateEmail(this.value)
-            }
-
-            if (type == KeyType.TELL_NUMBER) {
-                return validateTellNumber(this.value)
-            }
-            false
+    ): Boolean {
+        if(createKey == null || (createKey.value == null || createKey.type == null)) {
+            return false
         }
+
+        val value = createKey.value
+        val type = createKey.type
+
+        if (type == KeyType.CPF) {
+            return validateCpf(value)
+        }
+
+        if (type == KeyType.EMAIL) {
+            return validateEmail(value)
+        }
+
+        if (type == KeyType.TELL_NUMBER) {
+            return validateTellNumber(value)
+        }
+
+        return false
+    }
 
     private fun validateCpf(value: String): Boolean {
         return value.matches("^[0-9]{11}\$".toRegex())

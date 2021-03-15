@@ -3,6 +3,7 @@ package br.com.zup.pix.validator
 import io.micronaut.core.annotation.AnnotationValue
 import io.micronaut.validation.validator.constraints.ConstraintValidator
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext
+import java.util.*
 import javax.inject.Singleton
 import javax.validation.Constraint
 import javax.validation.Payload
@@ -28,6 +29,14 @@ class UniqueIdValidator : ConstraintValidator<ValidUniqueId, String> {
         annotationMetadata: AnnotationValue<ValidUniqueId>,
         context: ConstraintValidatorContext
     ): Boolean {
-        return false
+        if (value == null) {
+            return true
+        }
+        return try {
+            UUID.fromString(value)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
     }
 }

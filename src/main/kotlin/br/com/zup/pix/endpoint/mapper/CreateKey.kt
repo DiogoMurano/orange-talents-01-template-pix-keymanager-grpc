@@ -17,19 +17,24 @@ import javax.validation.constraints.NotNull
 data class CreateKey(
 
     @field:ValidUniqueId
-    val clientId: String,
     @field:NotNull
-    val type: ReceiverKeyType,
+    val clientId: String?,
+    @field:NotNull
+    val type: ReceiverKeyType?,
     @field:NotBlank
-    val value: String,
+    val value: String?,
     @field:NotNull
-    val accountType: ReceiverAccountType
+    val accountType: ReceiverAccountType?
 ) {
 
     fun toModel(): PixKey = PixKey(
-        clientId = UUID.fromString(clientId),
-        keyType = KeyType.valueOf(type.name),
-        keyValue = value,
-        accountType = AccountType.valueOf(accountType.name)
+        clientId = UUID.fromString(clientId!!),
+        keyType = KeyType.valueOf(type!!.name),
+        keyValue = if (type == ReceiverKeyType.RANDOM) {
+            UUID.randomUUID().toString()
+        } else {
+            value!!
+        },
+        accountType = AccountType.valueOf(accountType!!.name)
     )
 }

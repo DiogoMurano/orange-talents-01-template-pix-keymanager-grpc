@@ -1,5 +1,6 @@
 package br.com.zup.pix.service
 
+import br.com.zup.pix.KeyType
 import br.com.zup.pix.client.ItauERPClient
 import br.com.zup.pix.endpoint.mapper.CreateKey
 import br.com.zup.pix.exception.types.AlreadyExistsException
@@ -12,6 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
 import javax.validation.Valid
+import javax.validation.ValidationException
 
 @Validated
 @Singleton
@@ -28,8 +30,11 @@ class CreateKeyService(
             if (repository.existsByKeyValue(value))
                 throw AlreadyExistsException("Key $value is already registered.")
 
-            if (erpClient.getAccount(clientId, accountType.name).body() == null)
-                throw NotFoundException("Account id $clientId and type ${accountType.name} was not found")
+            val body = erpClient.getAccount(clientId, accountType.name).body()
+                ?: throw NotFoundException("Account id $clientId and type ${accountType.name} was not found")
+
+            if (type == KeyType.CPF && body.owner.cpf != value)
+                throw ValidationException("This CPF does not belong to the informed user.")
 
             toModel()
         }.apply {
