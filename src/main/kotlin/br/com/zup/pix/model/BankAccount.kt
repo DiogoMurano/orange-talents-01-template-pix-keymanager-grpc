@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-@Entity
+@Embeddable
 class BankAccount(
 
     @field:NotNull
@@ -23,10 +23,4 @@ class BankAccount(
     @NotNull
     @Embedded
     val owner: AccountOwner
-) {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
-
-}
+)

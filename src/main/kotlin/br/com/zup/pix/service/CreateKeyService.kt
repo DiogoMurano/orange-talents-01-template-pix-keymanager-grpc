@@ -1,15 +1,19 @@
 package br.com.zup.pix.service
 
-import br.com.zup.pix.KeyType
+import br.com.zup.pix.client.BCBClient
 import br.com.zup.pix.client.ItauERPClient
+import br.com.zup.pix.client.bcb.CreatePixKeyRequest
+import br.com.zup.pix.client.bcb.DeletePixKeyRequest
 import br.com.zup.pix.endpoint.dto.CreateKey
 import br.com.zup.pix.endpoint.dto.RemoveKey
 import br.com.zup.pix.exception.types.AlreadyExistsException
+import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.exception.types.NotFoundException
 import br.com.zup.pix.exception.types.PermissionDeniedException
 import br.com.zup.pix.model.PixKey
-import br.com.zup.pix.repository.BankAccountRepository
+import br.com.zup.pix.model.enums.KeyType
 import br.com.zup.pix.repository.KeyRepository
+import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -18,13 +22,14 @@ import javax.inject.Singleton
 import javax.transaction.Transactional
 import javax.validation.Valid
 import javax.validation.ValidationException
+import br.com.zup.pix.KeyType as ReceiverKeyType
 
 @Validated
 @Singleton
 class CreateKeyService(
     @Inject private val keyRepository: KeyRepository,
-    @Inject private val accountRepository: BankAccountRepository,
-    @Inject private val erpClient: ItauERPClient
+    @Inject private val erpClient: ItauERPClient,
+    @Inject private val bcbClient: BCBClient
 ) {
 
     private val logger = LoggerFactory.getLogger(CreateKeyService::class.java)
@@ -41,16 +46,24 @@ class CreateKeyService(
         val body = erpClient.getAccount(clientId, accountType.name).body()
             ?: throw NotFoundException("Account id $clientId and type ${accountType.name} was not found")
 
-        if (createKey.type!! == KeyType.CPF && body.owner.cpf != keyValue)
+        if (createKey.type!! == ReceiverKeyType.CPF && body.owner.cpf != keyValue)
             throw ValidationException("This CPF does not belong to the informed user.")
 
         val bankAccount = body.toModel()
         val pixKey = createKey.toModel(bankAccount)
 
-        accountRepository.save(bankAccount)
         keyRepository.save(pixKey)
 
-        logger.info("Pix key registered successfully")
+        val bcbResponse = bcbClient.createKey(CreatePixKeyRequest.byPixKey(pixKey))
+        if (bcbResponse.status != HttpStatus.CREATED) {
+            throw InternalException("We had a problem registering your key")
+        }
+
+        logger.info("Pix key registered successfully.")
+
+        if (pixKey.keyType == KeyType.RANDOM) {
+            pixKey.updateKey(bcbResponse.body()!!.key)
+        }
 
         return pixKey
     }
@@ -62,12 +75,20 @@ class CreateKeyService(
         val clientId = UUID.fromString(removeKey.clientId!!)
 
         val pixKey =
-            keyRepository.findById(pixId).orElseThrow { NotFoundException("The informed pix key was not found.") }
+            keyRepository.findById(pixId)
+                .orElseThrow { NotFoundException("The informed pix key was not found.") }
 
-        if (pixKey.clientId != clientId) {
+        if (pixKey.bankAccount.owner.clientId != clientId) {
             throw PermissionDeniedException("You don't have permission to remove this pix key.")
         }
 
-        keyRepository.deleteById(pixId)
+        val bcbResponse = bcbClient.deleteKey(DeletePixKeyRequest(pixKey.keyValue), pixKey.keyValue)
+        if (bcbResponse.status() != HttpStatus.OK) {
+            throw InternalException("We had a problem deleting your key")
+        }
+
+        keyRepository.deleteById(pixId).also {
+            logger.info("Key successfully deleted")
+        }
     }
 }

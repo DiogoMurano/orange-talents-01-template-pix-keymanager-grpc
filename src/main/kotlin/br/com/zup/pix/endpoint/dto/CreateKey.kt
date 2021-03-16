@@ -1,5 +1,6 @@
 package br.com.zup.pix.endpoint.dto
 
+import br.com.zup.pix.model.BankAccount
 import br.com.zup.pix.AccountType as ReceiverAccountType
 import br.com.zup.pix.KeyType as ReceiverKeyType
 import br.com.zup.pix.model.PixKey
@@ -27,14 +28,14 @@ data class CreateKey(
     val accountType: ReceiverAccountType?
 ) {
 
-    fun toModel(): PixKey = PixKey(
-        clientId = UUID.fromString(clientId!!),
+    fun toModel(account: BankAccount): PixKey = PixKey(
         keyType = KeyType.valueOf(type!!.name),
         keyValue = if (type == ReceiverKeyType.RANDOM) {
             UUID.randomUUID().toString()
         } else {
             value!!
         },
-        accountType = AccountType.valueOf(accountType!!.name)
+        accountType = AccountType.valueOf(accountType!!.name),
+        bankAccount = account
     )
 }

@@ -1,5 +1,6 @@
 package br.com.zup.pix.model
 
+import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.model.enums.AccountType
 import br.com.zup.pix.model.enums.KeyType
 import java.util.*
@@ -12,22 +13,19 @@ import javax.validation.constraints.Size
 class PixKey(
 
     @field:NotNull
-    val clientId: UUID,
-
-    @field:NotNull
     @Enumerated(EnumType.STRING)
     val keyType: KeyType,
 
     @field:NotBlank
     @Size(max = 77)
-    val keyValue: String = UUID.randomUUID().toString(),
+    var keyValue: String = UUID.randomUUID().toString(),
 
     @field:NotNull
     @Enumerated(EnumType.STRING)
     val accountType: AccountType,
 
     @field:NotNull
-    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @Embedded
     val bankAccount: BankAccount
 ) {
 
@@ -35,4 +33,10 @@ class PixKey(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: UUID? = null
 
+    fun updateKey(keyValue: String) {
+        if(keyType != KeyType.RANDOM) {
+            throw InternalException("Internal error")
+        }
+        this.keyValue = keyValue
+    }
 }

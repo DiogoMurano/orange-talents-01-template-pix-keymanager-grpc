@@ -24,7 +24,7 @@ class CreateKeyEndpoint(
 
         responseObserver.onNext(
             CreatePixKeyResponse.newBuilder()
-                .setClientId(pixKey.clientId.toString())
+                .setClientId(pixKey.bankAccount.owner.clientId.toString())
                 .setPixId(pixKey.id.toString())
                 .build()
         )
