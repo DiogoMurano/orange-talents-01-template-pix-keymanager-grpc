@@ -24,7 +24,11 @@ class PixKey(
 
     @field:NotNull
     @Enumerated(EnumType.STRING)
-    val accountType: AccountType
+    val accountType: AccountType,
+
+    @field:NotNull
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bankAccount: BankAccount
 ) {
 
     @field:Id
