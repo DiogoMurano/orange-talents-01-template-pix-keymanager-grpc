@@ -64,8 +64,6 @@ class PixKeyEndpoint(
 
             else -> throw InternalException("An internal error has occurred")
         }
-
-        super.find(request, responseObserver)
     }
 
 }
