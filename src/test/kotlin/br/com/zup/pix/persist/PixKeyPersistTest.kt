@@ -1,18 +1,6 @@
 package br.com.zup.pix.persist
 
-import br.com.zup.pix.endpoint.dto.CreateKey
-import br.com.zup.pix.exception.types.NotFoundException
-import br.com.zup.pix.model.enums.AccountType
-import br.com.zup.pix.model.enums.KeyType
-import br.com.zup.pix.repository.KeyRepository
-import br.com.zup.pix.service.CreateKeyService
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import java.util.*
-import javax.inject.Inject
-import br.com.zup.pix.AccountType as ReceiverAccountType
-import br.com.zup.pix.KeyType as ReceiverKeyType
 
 @MicronautTest
 class PixKeyPersistTest {

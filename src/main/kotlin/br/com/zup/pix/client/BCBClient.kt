@@ -1,9 +1,6 @@
 package br.com.zup.pix.client
 
-import br.com.zup.pix.client.bcb.CreatePixKeyRequest
-import br.com.zup.pix.client.bcb.CreatePixKeyResponse
-import br.com.zup.pix.client.bcb.DeletePixKeyRequest
-import br.com.zup.pix.client.bcb.DeletePixKeyResponse
+import br.com.zup.pix.client.bcb.*
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
@@ -20,13 +17,15 @@ interface BCBClient {
         consumes = [MediaType.APPLICATION_XML],
         produces = [MediaType.APPLICATION_XML]
     )
-    fun createKey(@Body request: CreatePixKeyRequest): HttpResponse<CreatePixKeyResponse>
+    fun createKey(@Body requestBCB: BCBCreatePixKeyRequest): HttpResponse<CreatePixKeyResponse>
 
     @Delete(
         value = "/api/v1/pix/keys/{key}",
         consumes = [MediaType.APPLICATION_XML],
         produces = [MediaType.APPLICATION_XML]
     )
-    fun deleteKey(@Body request: DeletePixKeyRequest, @QueryValue key: String): HttpResponse<DeletePixKeyResponse>
+    fun deleteKey(@Body request: BCBDeletePixKeyRequest, @QueryValue key: String): HttpResponse<DeletePixKeyResponse>
+
+    fun findKey(@QueryValue key: String): HttpResponse<BCBPixKeyDetailsResponse>
 
 }

@@ -5,11 +5,14 @@ option java_package = "br.com.zup.pix";
 option java_outer_classname = "KeyManager";
 option objc_class_prefix = "HLW";
 
+import "google/protobuf/timestamp.proto";
+
 package br.com.zup.pix;
 
 service KeyManagerService {
   rpc create(CreatePixKeyRequest) returns (CreatePixKeyResponse);
   rpc remove(RemovePixKeyMessage) returns (RemovePixKeyMessage);
+  rpc find(FindPixKeyRequest) returns (FindPixKeyResponse);
 }
 
 enum KeyType {
@@ -44,5 +47,50 @@ message RemovePixKeyMessage {
 
   string clientId = 1;
   string pixId = 2;
+
+}
+
+message FindPixKeyRequest {
+
+  message FindByPixId {
+    string clientId = 1;
+    string pixId = 2;
+  }
+
+  oneof filter {
+    FindByPixId pixId = 1;
+    string key = 2;
+  }
+}
+
+message FindPixKeyResponse {
+
+  message PixKey {
+
+    message BankAccount {
+
+      message AccountOwner {
+        string name = 1;
+        string cpf = 2;
+      }
+
+      AccountType accountType = 1;
+      string institution = 2;
+      string agency = 3;
+      string number = 4;
+      AccountOwner owner = 5;
+
+    }
+
+    KeyType keyType = 1;
+    string keyValue = 2;
+    google.protobuf.Timestamp createdAt = 3;
+    BankAccount account = 4;
+
+  }
+
+  string clientId = 1;
+  string pixId = 2;
+  PixKey key = 3;
 
 }

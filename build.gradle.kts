@@ -46,6 +46,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
 
     implementation("io.micronaut.xml:micronaut-jackson-xml")
+    implementation("io.grpc:protoc-gen-grpc-kotlin:1.0.0")
 }
 
 
@@ -109,4 +110,8 @@ buildscript {
 allOpen {
     annotation("io.micronaut.aop.Around")
 //    annotation("io.micronaut.aop.Around")
+}
+
+kapt {
+    correctErrorTypes = true
 }

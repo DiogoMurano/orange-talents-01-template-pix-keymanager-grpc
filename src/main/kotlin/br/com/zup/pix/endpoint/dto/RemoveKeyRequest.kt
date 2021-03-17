@@ -5,7 +5,7 @@ import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.NotBlank
 
 @Introspected
-class RemoveKey(
+class RemoveKeyRequest(
 
     @field:ValidUniqueId
     @NotBlank

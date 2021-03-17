@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull
 
 @Introspected
 @ValidPixKey
-data class CreateKey(
+data class CreateKeyRequest(
 
     @field:ValidUniqueId
     @field:NotNull
@@ -35,7 +35,6 @@ data class CreateKey(
         } else {
             value!!
         },
-        accountType = AccountType.valueOf(accountType!!.name),
         bankAccount = account
     )
 }
