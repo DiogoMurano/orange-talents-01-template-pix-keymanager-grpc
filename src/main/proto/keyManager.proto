@@ -13,6 +13,7 @@ service KeyManagerService {
   rpc create(CreatePixKeyRequest) returns (CreatePixKeyReply);
   rpc remove(RemovePixKeyRequest) returns (RemovePixKeyReply);
   rpc find(FindPixKeyRequest) returns (FindPixKeyReply);
+  rpc listAllByClient(ListAllPixKeysRequest) returns (ListAllPixKeysReply);
 }
 
 enum KeyType {
@@ -99,5 +100,27 @@ message FindPixKeyReply {
   string clientId = 1;
   string pixId = 2;
   PixKey key = 3;
+
+}
+
+message ListAllPixKeysRequest {
+
+  string clientId = 1;
+
+}
+
+message ListAllPixKeysReply {
+
+  message PixKey {
+
+    string pixId = 1;
+    KeyType keyType = 2;
+    string keyValue = 3;
+    AccountType accountType = 4;
+    google.protobuf.Timestamp createdAt = 5;
+  }
+
+  string clientId = 1;
+  repeated PixKey keys = 2;
 
 }
