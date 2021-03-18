@@ -1,17 +1,17 @@
 package br.com.zup.pix.client.bcb
 
-import br.com.zup.pix.endpoint.dto.AccountOwnerResponse
-import br.com.zup.pix.endpoint.dto.BankAccountResponse
-import br.com.zup.pix.endpoint.dto.PixKeyResponse
+import br.com.zup.pix.endpoint.reply.AccountOwnerResponse
+import br.com.zup.pix.endpoint.reply.BankAccountResponse
+import br.com.zup.pix.endpoint.reply.PixKeyResponse
 import java.time.LocalDateTime
 
-data class CreatePixKeyResponse(
+data class BCBCreatePixKeyResponse(
     val keyType: BCBKeyType,
     val key: String,
     val createdAt: LocalDateTime
 )
 
-data class DeletePixKeyResponse(
+data class BCBDeletePixKeyResponse(
     val key: String,
     val participant: String,
     val deletedAt: LocalDateTime

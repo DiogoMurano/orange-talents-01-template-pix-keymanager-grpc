@@ -1,11 +1,9 @@
 package br.com.zup.pix.endpoint
 
 import br.com.zup.pix.*
-import br.com.zup.pix.endpoint.dto.PixKeyResponse
-import br.com.zup.pix.endpoint.mapper.toFindByKeyModel
-import br.com.zup.pix.endpoint.mapper.toFindByPixIdModel
-import br.com.zup.pix.endpoint.mapper.toFindPixKeyResponse
-import br.com.zup.pix.endpoint.mapper.toModel
+import br.com.zup.pix.endpoint.reply.PixKeyResponse
+import br.com.zup.pix.endpoint.reply.toFindPixKeyReply
+import br.com.zup.pix.endpoint.request.*
 import br.com.zup.pix.exception.ErrorHandler
 import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.exception.types.ValidationException
@@ -20,13 +18,13 @@ class PixKeyEndpoint(
     @Inject private val service: KeyService
 ) : KeyManagerServiceGrpc.KeyManagerServiceImplBase() {
 
-    override fun create(request: CreatePixKeyRequest, responseObserver: StreamObserver<CreatePixKeyResponse>) {
+    override fun create(request: CreatePixKeyRequest, responseObserver: StreamObserver<CreatePixKeyReply>) {
 
-        val createKey = request.toModel()
+        val createKey = request.toEntryCreateKey()
         val pixKey = service.persistKey(createKey)
 
         responseObserver.onNext(
-            CreatePixKeyResponse.newBuilder()
+            CreatePixKeyReply.newBuilder()
                 .setClientId(pixKey.bankAccount.owner.clientId.toString())
                 .setPixId(pixKey.id.toString())
                 .build()
@@ -34,13 +32,13 @@ class PixKeyEndpoint(
         responseObserver.onCompleted()
     }
 
-    override fun remove(request: RemovePixKeyMessage, responseObserver: StreamObserver<RemovePixKeyMessage>) {
+    override fun remove(request: RemovePixKeyRequest, responseObserver: StreamObserver<RemovePixKeyReply>) {
 
-        val removeKey = request.toModel()
+        val removeKey = request.toEntryRemoveKey()
         service.removeKey(removeKey)
 
         responseObserver.onNext(
-            RemovePixKeyMessage.newBuilder()
+            RemovePixKeyReply.newBuilder()
                 .setClientId(removeKey.clientId.toString())
                 .setPixId(removeKey.pixId.toString())
                 .build()
@@ -48,16 +46,16 @@ class PixKeyEndpoint(
         responseObserver.onCompleted()
     }
 
-    override fun find(request: FindPixKeyRequest, responseObserver: StreamObserver<FindPixKeyResponse>) {
+    override fun find(request: FindPixKeyRequest, responseObserver: StreamObserver<FindPixKeyReply>) {
 
         fun buildResponse(key: PixKeyResponse) {
-            responseObserver.onNext(key.toFindPixKeyResponse())
+            responseObserver.onNext(key.toFindPixKeyReply())
             responseObserver.onCompleted()
         }
 
         when (request.filterCase) {
-            FindPixKeyRequest.FilterCase.KEY -> buildResponse(service.findByKey(request.toFindByKeyModel()))
-            FindPixKeyRequest.FilterCase.PIXID -> buildResponse(service.findByPixId(request.toFindByPixIdModel()))
+            FindPixKeyRequest.FilterCase.KEY -> buildResponse(service.findByKey(request.toEntryFindByKey()))
+            FindPixKeyRequest.FilterCase.PIXID -> buildResponse(service.findByPixId(request.toEntryFindByPixId()))
 
             FindPixKeyRequest.FilterCase.FILTER_NOT_SET ->
                 throw ValidationException("The data entered in the request is insufficient")

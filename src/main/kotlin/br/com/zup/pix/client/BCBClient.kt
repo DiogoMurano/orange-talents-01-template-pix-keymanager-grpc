@@ -17,14 +17,14 @@ interface BCBClient {
         consumes = [MediaType.APPLICATION_XML],
         produces = [MediaType.APPLICATION_XML]
     )
-    fun createKey(@Body requestBCB: BCBCreatePixKeyRequest): HttpResponse<CreatePixKeyResponse>
+    fun createKey(@Body requestBCB: BCBCreatePixKeyRequest): HttpResponse<BCBCreatePixKeyResponse>
 
     @Delete(
         value = "/api/v1/pix/keys/{key}",
         consumes = [MediaType.APPLICATION_XML],
         produces = [MediaType.APPLICATION_XML]
     )
-    fun deleteKey(@Body request: BCBDeletePixKeyRequest, @QueryValue key: String): HttpResponse<DeletePixKeyResponse>
+    fun deleteKey(@Body request: BCBDeletePixKeyRequest, @QueryValue key: String): HttpResponse<BCBDeletePixKeyResponse>
 
     fun findKey(@QueryValue key: String): HttpResponse<BCBPixKeyDetailsResponse>
 

@@ -4,8 +4,8 @@ import br.com.zup.pix.client.BCBClient
 import br.com.zup.pix.client.ItauERPClient
 import br.com.zup.pix.client.bcb.BCBCreatePixKeyRequest
 import br.com.zup.pix.client.bcb.BCBDeletePixKeyRequest
-import br.com.zup.pix.endpoint.dto.*
-import br.com.zup.pix.endpoint.mapper.toPixKeyResponse
+import br.com.zup.pix.endpoint.request.*
+import br.com.zup.pix.endpoint.reply.PixKeyResponse
 import br.com.zup.pix.exception.types.AlreadyExistsException
 import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.exception.types.NotFoundException
@@ -35,10 +35,10 @@ class KeyService(
     private val logger = LoggerFactory.getLogger(KeyService::class.java)
 
     @Transactional
-    fun persistKey(@Valid createKeyRequest: CreateKeyRequest): PixKey {
-        val keyValue = createKeyRequest.value!!
-        val clientId = createKeyRequest.clientId!!
-        val accountType = createKeyRequest.accountType!!
+    fun persistKey(@Valid entryCreateKey: EntryCreateKey): PixKey {
+        val keyValue = entryCreateKey.value!!
+        val clientId = entryCreateKey.clientId!!
+        val accountType = entryCreateKey.accountType!!
 
         if (keyRepository.existsByKeyValue(keyValue))
             throw AlreadyExistsException("Key $keyValue is already registered.")
@@ -46,11 +46,11 @@ class KeyService(
         val body = erpClient.getAccount(clientId, accountType.name).body()
             ?: throw NotFoundException("Account id $clientId and type ${accountType.name} was not found")
 
-        if (createKeyRequest.type!! == ReceiverKeyType.CPF && body.owner.cpf != keyValue)
+        if (entryCreateKey.type!! == ReceiverKeyType.CPF && body.owner.cpf != keyValue)
             throw ValidationException("This CPF does not belong to the informed user.")
 
         val bankAccount = body.toModel()
-        val pixKey = createKeyRequest.toModel(bankAccount)
+        val pixKey = entryCreateKey.toModel(bankAccount)
 
         keyRepository.save(pixKey)
 
@@ -69,10 +69,10 @@ class KeyService(
     }
 
     @Transactional
-    fun removeKey(@Valid removeKeyRequest: RemoveKeyRequest) {
+    fun removeKey(@Valid entryRemoveKey: EntryRemoveKey) {
 
-        val pixId = UUID.fromString(removeKeyRequest.pixId!!)
-        val clientId = UUID.fromString(removeKeyRequest.clientId!!)
+        val pixId = UUID.fromString(entryRemoveKey.pixId!!)
+        val clientId = UUID.fromString(entryRemoveKey.clientId!!)
 
         val pixKey =
             keyRepository.findById(pixId)
@@ -93,8 +93,8 @@ class KeyService(
     }
 
     @Transactional
-    fun findByKey(@Valid findRequest: FindByKeyRequest): PixKeyResponse {
-        val key: String = findRequest.key!!
+    fun findByKey(@Valid entryFind: EntryFindByKey): PixKeyResponse {
+        val key: String = entryFind.key!!
 
         val optional = keyRepository.findByKeyValue(key)
         if (optional.isEmpty) {
@@ -106,16 +106,16 @@ class KeyService(
             throw NotFoundException("Key not found.")
         }
 
-        return optional.get().toPixKeyResponse()
+        return PixKeyResponse.of(optional.get())
     }
 
-    fun findByPixId(findRequest: FindByPixIdRequest): PixKeyResponse {
-        val key = keyRepository.findById(UUID.fromString(findRequest.pixId))
+    fun findByPixId(entryFindRequest: EntryFindByPixId): PixKeyResponse {
+        val key = keyRepository.findById(UUID.fromString(entryFindRequest.pixId))
             .orElseThrow { throw NotFoundException("Key not found.") }
 
-        if (key.bankAccount.owner.clientId.toString() != findRequest.clientId)
+        if (key.bankAccount.owner.clientId.toString() != entryFindRequest.clientId)
             throw PermissionDeniedException("You do not have permission to interact with this key.")
 
-        return key.toPixKeyResponse()
+        return PixKeyResponse.of(key)
     }
 }

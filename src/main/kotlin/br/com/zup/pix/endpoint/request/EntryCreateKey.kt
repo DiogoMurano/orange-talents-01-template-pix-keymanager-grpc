@@ -1,10 +1,10 @@
-package br.com.zup.pix.endpoint.dto
+package br.com.zup.pix.endpoint.request
 
+import br.com.zup.pix.CreatePixKeyRequest
 import br.com.zup.pix.model.BankAccount
 import br.com.zup.pix.AccountType as ReceiverAccountType
 import br.com.zup.pix.KeyType as ReceiverKeyType
 import br.com.zup.pix.model.PixKey
-import br.com.zup.pix.model.enums.AccountType
 import br.com.zup.pix.model.enums.KeyType
 import br.com.zup.pix.validator.ValidPixKey
 import br.com.zup.pix.validator.ValidUniqueId
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull
 
 @Introspected
 @ValidPixKey
-data class CreateKeyRequest(
+data class EntryCreateKey(
 
     @field:ValidUniqueId
     @field:NotNull
@@ -38,3 +38,10 @@ data class CreateKeyRequest(
         bankAccount = account
     )
 }
+
+fun CreatePixKeyRequest.toEntryCreateKey(): EntryCreateKey = EntryCreateKey(
+    clientId = clientId,
+    type = keyType,
+    value = keyValue,
+    accountType = accountType
+)

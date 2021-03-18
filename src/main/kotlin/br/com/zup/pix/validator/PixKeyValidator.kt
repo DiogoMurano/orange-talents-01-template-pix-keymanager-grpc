@@ -1,7 +1,7 @@
 package br.com.zup.pix.validator
 
 import br.com.zup.pix.KeyType
-import br.com.zup.pix.endpoint.dto.CreateKeyRequest
+import br.com.zup.pix.endpoint.request.EntryCreateKey
 import io.micronaut.core.annotation.AnnotationValue
 import io.micronaut.validation.validator.constraints.ConstraintValidator
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext
@@ -25,19 +25,19 @@ annotation class ValidPixKey(
 )
 
 @Singleton
-class PixKeyValidator : ConstraintValidator<ValidPixKey, CreateKeyRequest> {
+class PixKeyValidator : ConstraintValidator<ValidPixKey, EntryCreateKey> {
 
     override fun isValid(
-        createKeyRequest: CreateKeyRequest?,
+        entryCreateKey: EntryCreateKey?,
         annotationMetadata: AnnotationValue<ValidPixKey>,
         context: ConstraintValidatorContext
     ): Boolean {
-        if(createKeyRequest == null || (createKeyRequest.value == null || createKeyRequest.type == null)) {
+        if(entryCreateKey == null || (entryCreateKey.value == null || entryCreateKey.type == null)) {
             return false
         }
 
-        val value = createKeyRequest.value
-        val type = createKeyRequest.type
+        val value = entryCreateKey.value
+        val type = entryCreateKey.type
 
         if (type == KeyType.CPF) {
             return validateCpf(value)

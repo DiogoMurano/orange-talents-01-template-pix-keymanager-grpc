@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class AccountResponse(
+data class ERPAccountResponse(
 
     @JsonProperty("tipo")
     @NotBlank
@@ -17,7 +17,7 @@ data class AccountResponse(
 
     @JsonProperty("instituicao")
     @NotNull
-    val institution: InstitutionResponse,
+    val institution: ERPInstitutionResponse,
 
     @JsonProperty("agencia")
     @NotBlank
@@ -30,7 +30,7 @@ data class AccountResponse(
 
     @JsonProperty("titular")
     @NotNull
-    val owner: OwnerResponse
+    val owner: ERPOwnerResponse
 ) {
 
     fun toModel(): BankAccount = BankAccount(
@@ -42,7 +42,7 @@ data class AccountResponse(
 
 }
 
-data class InstitutionResponse(
+data class ERPInstitutionResponse(
 
     @JsonProperty("nome")
     @NotBlank
@@ -53,7 +53,7 @@ data class InstitutionResponse(
     val ispb: String
 )
 
-data class OwnerResponse(
+data class ERPOwnerResponse(
 
     @JsonProperty("id")
     @NotNull

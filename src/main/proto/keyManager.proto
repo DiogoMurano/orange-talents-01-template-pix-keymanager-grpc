@@ -10,9 +10,9 @@ import "google/protobuf/timestamp.proto";
 package br.com.zup.pix;
 
 service KeyManagerService {
-  rpc create(CreatePixKeyRequest) returns (CreatePixKeyResponse);
-  rpc remove(RemovePixKeyMessage) returns (RemovePixKeyMessage);
-  rpc find(FindPixKeyRequest) returns (FindPixKeyResponse);
+  rpc create(CreatePixKeyRequest) returns (CreatePixKeyReply);
+  rpc remove(RemovePixKeyRequest) returns (RemovePixKeyReply);
+  rpc find(FindPixKeyRequest) returns (FindPixKeyReply);
 }
 
 enum KeyType {
@@ -36,14 +36,21 @@ message CreatePixKeyRequest {
 
 }
 
-message CreatePixKeyResponse {
+message CreatePixKeyReply {
 
   string clientId = 1;
   string pixId = 2;
 
 }
 
-message RemovePixKeyMessage {
+message RemovePixKeyRequest {
+
+  string clientId = 1;
+  string pixId = 2;
+
+}
+
+message RemovePixKeyReply {
 
   string clientId = 1;
   string pixId = 2;
@@ -63,7 +70,7 @@ message FindPixKeyRequest {
   }
 }
 
-message FindPixKeyResponse {
+message FindPixKeyReply {
 
   message PixKey {
 
