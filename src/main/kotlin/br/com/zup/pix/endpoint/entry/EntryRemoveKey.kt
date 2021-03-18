@@ -1,4 +1,4 @@
-package br.com.zup.pix.endpoint.request
+package br.com.zup.pix.endpoint.entry
 
 import br.com.zup.pix.RemovePixKeyRequest
 import br.com.zup.pix.validator.ValidUniqueId
@@ -6,7 +6,7 @@ import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.NotBlank
 
 @Introspected
-class EntryRemoveKey(
+data class EntryRemoveKey(
 
     @field:ValidUniqueId
     @NotBlank

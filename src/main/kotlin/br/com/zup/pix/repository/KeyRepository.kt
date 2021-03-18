@@ -12,4 +12,6 @@ interface KeyRepository : CrudRepository<PixKey, UUID> {
 
     fun existsByKeyValue(keyValue: String): Boolean
 
+    fun findAllByBankAccountOwnerClientId(clientId: UUID): List<PixKey>
+
 }

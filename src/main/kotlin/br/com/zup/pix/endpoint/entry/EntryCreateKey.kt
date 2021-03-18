@@ -1,4 +1,4 @@
-package br.com.zup.pix.endpoint.request
+package br.com.zup.pix.endpoint.entry
 
 import br.com.zup.pix.CreatePixKeyRequest
 import br.com.zup.pix.model.BankAccount

@@ -1,14 +1,16 @@
 package br.com.zup.pix.endpoint
 
 import br.com.zup.pix.*
+import br.com.zup.pix.endpoint.entry.*
 import br.com.zup.pix.endpoint.reply.PixKeyResponse
 import br.com.zup.pix.endpoint.reply.toFindPixKeyReply
-import br.com.zup.pix.endpoint.request.*
 import br.com.zup.pix.exception.ErrorHandler
 import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.exception.types.ValidationException
 import br.com.zup.pix.service.KeyService
+import com.google.protobuf.Timestamp
 import io.grpc.stub.StreamObserver
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,8 +22,8 @@ class PixKeyEndpoint(
 
     override fun create(request: CreatePixKeyRequest, responseObserver: StreamObserver<CreatePixKeyReply>) {
 
-        val createKey = request.toEntryCreateKey()
-        val pixKey = service.persistKey(createKey)
+        val entry = request.toEntryCreateKey()
+        val pixKey = service.persistKey(entry)
 
         responseObserver.onNext(
             CreatePixKeyReply.newBuilder()
@@ -34,13 +36,13 @@ class PixKeyEndpoint(
 
     override fun remove(request: RemovePixKeyRequest, responseObserver: StreamObserver<RemovePixKeyReply>) {
 
-        val removeKey = request.toEntryRemoveKey()
-        service.removeKey(removeKey)
+        val entry = request.toEntryRemoveKey()
+        service.removeKey(entry)
 
         responseObserver.onNext(
             RemovePixKeyReply.newBuilder()
-                .setClientId(removeKey.clientId.toString())
-                .setPixId(removeKey.pixId.toString())
+                .setClientId(entry.clientId.toString())
+                .setPixId(entry.pixId.toString())
                 .build()
         )
         responseObserver.onCompleted()
@@ -64,4 +66,31 @@ class PixKeyEndpoint(
         }
     }
 
+    override fun listAllByClient(
+        request: ListAllPixKeysRequest,
+        responseObserver: StreamObserver<ListAllPixKeysReply>
+    ) {
+        val entry = request.toEntryListKeys()
+        val keys = service.listAllByClient(entry)
+
+        responseObserver.onNext(
+            ListAllPixKeysReply.newBuilder()
+                .setClientId(entry.clientId!!)
+                .addAllKeys(keys.map {
+                    ListAllPixKeysReply.PixKey.newBuilder()
+                        .setPixId(it.id.toString())
+                        .setKeyType(KeyType.valueOf(it.keyType.name))
+                        .setKeyValue(it.keyValue)
+                        .setAccountType(AccountType.valueOf(it.bankAccount.type.name))
+                        .setCreatedAt(it.createdAt.let { createdAt ->
+                            val instant = createdAt.atZone(ZoneId.of("UTC")).toInstant()
+                            Timestamp.newBuilder()
+                                .setSeconds(instant.epochSecond)
+                                .setNanos(instant.nano)
+                                .build()
+                        }).build()
+                }).build()
+        )
+        responseObserver.onCompleted()
+    }
 }

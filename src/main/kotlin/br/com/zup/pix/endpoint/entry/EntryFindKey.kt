@@ -1,4 +1,4 @@
-package br.com.zup.pix.endpoint.request
+package br.com.zup.pix.endpoint.entry
 
 import br.com.zup.pix.FindPixKeyRequest
 import br.com.zup.pix.validator.ValidUniqueId
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank
 @Introspected
 data class EntryFindByKey(
 
-    @NotBlank
+    @field:NotBlank
     val key: String?
 )
 
@@ -20,11 +20,11 @@ fun FindPixKeyRequest.toEntryFindByKey(): EntryFindByKey = EntryFindByKey(
 data class EntryFindByPixId(
 
     @field:ValidUniqueId
-    @NotBlank
+    @field:NotBlank
     val clientId: String?,
 
     @field:ValidUniqueId
-    @NotBlank
+    @field:NotBlank
     val pixId: String?
 )
 

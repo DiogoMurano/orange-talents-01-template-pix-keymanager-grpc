@@ -13,23 +13,23 @@ import javax.validation.constraints.Size
 class PixKey(
 
     @field:NotNull
-    @Enumerated(EnumType.STRING)
+    @field:Enumerated(EnumType.STRING)
     val keyType: KeyType,
 
     @field:NotBlank
-    @Size(max = 77)
+    @field:Size(max = 77)
     var keyValue: String = UUID.randomUUID().toString(),
 
     @field:NotNull
-    @Embedded
+    @field:Embedded
     val bankAccount: BankAccount
 ) {
 
     @field:Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @field:GeneratedValue(strategy = GenerationType.AUTO)
     val id: UUID? = null
 
-    @NotNull
+    @field:NotNull
     val createdAt: LocalDateTime = LocalDateTime.now()
 
     fun updateKey(keyValue: String) {

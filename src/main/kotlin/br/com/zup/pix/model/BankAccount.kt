@@ -10,17 +10,17 @@ import javax.validation.constraints.Size
 class BankAccount(
 
     @field:NotNull
-    @Enumerated(EnumType.STRING)
+    @field:Enumerated(EnumType.STRING)
     val type: AccountType,
 
     @field:NotBlank
-    @Size(max = 4)
+    @field:Size(max = 4)
     val agency: String,
 
     @field:NotBlank
     val number: String,
 
-    @NotNull
-    @Embedded
+    @field:NotNull
+    @field:Embedded
     val owner: AccountOwner
 )
