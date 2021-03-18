@@ -32,11 +32,11 @@ class PixKeyValidator : ConstraintValidator<ValidPixKey, EntryCreateKey> {
         annotationMetadata: AnnotationValue<ValidPixKey>,
         context: ConstraintValidatorContext
     ): Boolean {
-        if (createKey == null || (createKey.keyValue == null || createKey.keyType == null)) {
-            return false
+        if (entryCreateKey == null || (entryCreateKey.value == null || entryCreateKey.type == null)) {
+            return true
         }
 
-        if(createKey.keyValue.isBlank() && createKey.keyType != KeyType.RANDOM) {
+        if(entryCreateKey.value.isBlank() && entryCreateKey.type != KeyType.RANDOM) {
             return false
         }
 
