@@ -22,5 +22,9 @@ class BankAccount(
 
     @field:NotNull
     @field:Embedded
+    val institution: Institution,
+
+    @field:NotNull
+    @field:Embedded
     val owner: AccountOwner
 )

@@ -32,17 +32,27 @@ data class BankAccountResponse(
     val type: AccountType,
     val agency: String,
     val number: String,
-    val owner: AccountOwnerResponse
+    val owner: AccountOwnerResponse,
+    val institution: InstitutionResponse
 ) {
     companion object {
         fun of(account: BankAccount): BankAccountResponse = BankAccountResponse(
             type = account.type,
             agency = account.agency,
             number = account.number,
-            owner = AccountOwnerResponse.of(account.owner)
+            owner = AccountOwnerResponse.of(account.owner),
+            institution = InstitutionResponse(
+                name = account.institution.name,
+                ispb = account.institution.ispb
+            )
         )
     }
 }
+
+data class InstitutionResponse(
+    val name: String,
+    val ispb: String
+)
 
 data class AccountOwnerResponse(
     val clientId: String? = null,
@@ -75,7 +85,7 @@ fun PixKeyResponse.toFindPixKeyReply(): FindPixKeyReply {
                 }).setAccount(
                     FindPixKeyReply.PixKey.BankAccount.newBuilder()
                         .setAccountType(br.com.zup.pix.AccountType.valueOf(bankAccount.type.name))
-                        .setInstitution("ITAÚ UNIBANCO S.A.")
+                        .setInstitution(bankAccount.institution.name)
                         .setAgency(bankAccount.agency)
                         .setNumber(bankAccount.number)
                         .setOwner(

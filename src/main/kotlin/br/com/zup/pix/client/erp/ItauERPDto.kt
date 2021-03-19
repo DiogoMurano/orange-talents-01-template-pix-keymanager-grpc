@@ -2,6 +2,7 @@ package br.com.zup.pix.client.erp
 
 import br.com.zup.pix.model.AccountOwner
 import br.com.zup.pix.model.BankAccount
+import br.com.zup.pix.model.Institution
 import br.com.zup.pix.model.enums.AccountType
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
@@ -37,7 +38,11 @@ data class ERPAccountResponse(
         type = AccountType.valueOf(type),
         agency = agency,
         number = number,
-        owner = owner.toModel()
+        owner = owner.toModel(),
+        institution = Institution(
+            name = institution.name,
+            ispb = institution.ispb
+        )
     )
 
 }

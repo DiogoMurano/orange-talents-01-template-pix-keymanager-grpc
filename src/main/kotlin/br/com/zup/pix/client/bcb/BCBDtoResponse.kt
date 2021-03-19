@@ -2,6 +2,7 @@ package br.com.zup.pix.client.bcb
 
 import br.com.zup.pix.endpoint.reply.AccountOwnerResponse
 import br.com.zup.pix.endpoint.reply.BankAccountResponse
+import br.com.zup.pix.endpoint.reply.InstitutionResponse
 import br.com.zup.pix.endpoint.reply.PixKeyResponse
 import java.time.LocalDateTime
 
@@ -54,6 +55,7 @@ data class BCBBankAccountResponse(
         type = accountType.modelAccountType,
         agency = branch,
         number = accountNumber,
-        owner = accountOwner
+        owner = accountOwner,
+        institution = InstitutionResponse("", "")
     )
 }
