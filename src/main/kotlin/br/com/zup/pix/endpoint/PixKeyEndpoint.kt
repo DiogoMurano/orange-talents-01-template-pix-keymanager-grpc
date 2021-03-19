@@ -7,7 +7,9 @@ import br.com.zup.pix.endpoint.reply.toFindPixKeyReply
 import br.com.zup.pix.exception.ErrorHandler
 import br.com.zup.pix.exception.types.InternalException
 import br.com.zup.pix.exception.types.ValidationException
-import br.com.zup.pix.service.KeyService
+import br.com.zup.pix.service.CreateKeyService
+import br.com.zup.pix.service.FindKeyService
+import br.com.zup.pix.service.RemoveKeyService
 import com.google.protobuf.Timestamp
 import io.grpc.stub.StreamObserver
 import java.time.ZoneId
@@ -17,13 +19,15 @@ import javax.inject.Singleton
 @ErrorHandler
 @Singleton
 class PixKeyEndpoint(
-    @Inject private val service: KeyService
+    @Inject private val createService: CreateKeyService,
+    @Inject private val removeService: RemoveKeyService,
+    @Inject private val findService: FindKeyService,
 ) : KeyManagerServiceGrpc.KeyManagerServiceImplBase() {
 
     override fun create(request: CreatePixKeyRequest, responseObserver: StreamObserver<CreatePixKeyReply>) {
 
         val entry = request.toEntryCreateKey()
-        val pixKey = service.persistKey(entry)
+        val pixKey = createService.persistKey(entry)
 
         responseObserver.onNext(
             CreatePixKeyReply.newBuilder()
@@ -37,7 +41,7 @@ class PixKeyEndpoint(
     override fun remove(request: RemovePixKeyRequest, responseObserver: StreamObserver<RemovePixKeyReply>) {
 
         val entry = request.toEntryRemoveKey()
-        service.removeKey(entry)
+        removeService.removeKey(entry)
 
         responseObserver.onNext(
             RemovePixKeyReply.newBuilder()
@@ -56,8 +60,8 @@ class PixKeyEndpoint(
         }
 
         when (request.filterCase) {
-            FindPixKeyRequest.FilterCase.KEY -> buildResponse(service.findByKey(request.toEntryFindByKey()))
-            FindPixKeyRequest.FilterCase.PIXID -> buildResponse(service.findByPixId(request.toEntryFindByPixId()))
+            FindPixKeyRequest.FilterCase.KEY -> buildResponse(findService.findByKey(request.toEntryFindByKey()))
+            FindPixKeyRequest.FilterCase.PIXID -> buildResponse(findService.findByPixId(request.toEntryFindByPixId()))
 
             FindPixKeyRequest.FilterCase.FILTER_NOT_SET ->
                 throw ValidationException("The data entered in the request is insufficient")
@@ -71,7 +75,7 @@ class PixKeyEndpoint(
         responseObserver: StreamObserver<ListAllPixKeysReply>
     ) {
         val entry = request.toEntryListKeys()
-        val keys = service.listAllByClient(entry)
+        val keys = findService.listAllByClient(entry)
 
         responseObserver.onNext(
             ListAllPixKeysReply.newBuilder()

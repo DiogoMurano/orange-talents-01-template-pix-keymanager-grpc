@@ -13,7 +13,7 @@ plugins {
 version = "0.1"
 group = "br.com.zup.pix"
 
-val kotlinVersion = project.properties.get("kotlinVersion")
+val kotlinVersion = project.properties["kotlinVersion"]
 
 repositories {
     mavenCentral()
@@ -46,7 +46,6 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
 
     implementation("io.micronaut.xml:micronaut-jackson-xml")
-    implementation("io.grpc:protoc-gen-grpc-kotlin:1.0.0")
 }
 
 
